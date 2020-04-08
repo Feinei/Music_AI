@@ -22,11 +22,10 @@ def midiToNoteStateMatrix(midifile, squash=True, span=span):
     condition = True
     while condition:
         if time % (pattern.resolution / 4) == (pattern.resolution / 8):
-            # Crossed a note boundary. Create a new state, defaulting to holding notes
             oldstate = state
             state = [[oldstate[x][0],0] for x in range(span)]
             statematrix.append(state)
-        for i in range(len(timeleft)): #For each track
+        for i in range(len(timeleft)): 
             if not condition:
                 break
             while timeleft[i] == 0:
@@ -37,7 +36,6 @@ def midiToNoteStateMatrix(midifile, squash=True, span=span):
                 if isinstance(evt, midi.NoteEvent):
                     if (evt.pitch < lowerBound) or (evt.pitch >= upperBound):
                         pass
-                        # print "Note {} at time {} out of bounds (ignoring)".format(evt.pitch, time)
                     else:
                         if isinstance(evt, midi.NoteOffEvent) or evt.velocity == 0:
                             state[evt.pitch-lowerBound] = [0, 0]
@@ -45,8 +43,6 @@ def midiToNoteStateMatrix(midifile, squash=True, span=span):
                             state[evt.pitch-lowerBound] = [1, 1]
                 elif isinstance(evt, midi.TimeSignatureEvent):
                     if evt.numerator not in (2, 4):
-                        # We don't want to worry about non-4 time signatures. Bail early!
-                        # print "Found time signature event {}. Bailing!".format(evt)
                         out =  statematrix
                         condition = False
                         break
